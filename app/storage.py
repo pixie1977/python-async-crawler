@@ -33,12 +33,20 @@ class NewsStorage(Thread):
         logger.info(f"✅ NewsStorage initialized: {self.file_path.resolve()}")
 
     def run(self):
+        self.current_data = self.load()
         while True:
             if not self.queue.empty():
-                data_to_save = self.queue.get()
-                self._save_story(story_id=data_to_save[0], data=data_to_save[1])
-            else:
-                sleep(0.5)
+                while not self.queue.empty():
+                    data_to_save = self.queue.get()
+
+                    story_id = data_to_save[0]
+                    data = data_to_save[1].copy()
+                    data["updated_at"] = datetime.now().isoformat()
+
+                    self.current_data["stories"][story_id] = data
+                self._write_file(self.current_data)
+
+            sleep(0.5)
 
             self.current_data = self.load()
 
@@ -103,17 +111,6 @@ class NewsStorage(Thread):
 
     async def save_story(self, story_id: str, data: dict):
         self.queue.put([story_id, data])
-
-    def _save_story(self, story_id: str, data: dict):
-        data = data.copy()
-        data["updated_at"] = datetime.now().isoformat()
-
-        logger.debug(f"🔒 Lock acquired for saving story {story_id}")
-        data_store = self.load()
-        data_store["stories"][story_id] = data
-        self._write_file(data_store)
-        logger.debug(f"💾 Story {story_id} saved successfully")
-
 
     async def get_all_story_ids(self) -> List[str]:
         data = self.current_data
