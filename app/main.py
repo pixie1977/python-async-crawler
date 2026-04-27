@@ -10,17 +10,18 @@ from app.storage import NewsStorage
 def setup_logging() -> None:
     """Настраивает формат и уровень логирования."""
     logging.basicConfig(
-        level=LOG_LEVEL,  # ← ВАЖНО: должен быть INFO или DEBUG
+        level=LOG_LEVEL,
         format="%(asctime)s | %(name)s | %(levelname)s | %(message)s",
         handlers=[
-            logging.StreamHandler(),  # вывод в консоль
-            # При желании можно добавить logging.FileHandler("hn_scraper.log")
+            logging.StreamHandler(),  # Вывод в консоль
+            # При необходимости добавьте: logging.FileHandler("hn_scraper.log")
         ],
     )
 
 
 async def main() -> None:
-    setup_logging()  # <-- Добавляем настройку логов
+    """Асинхронная точка входа приложения."""
+    setup_logging()
     storage = NewsStorage("news_data.json")
     print(f"📁 Storage path: {storage.file_path.resolve()}")
 
