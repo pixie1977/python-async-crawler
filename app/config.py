@@ -1,4 +1,5 @@
 # config.py
+import logging
 import os
 
 # Интервал между запусками (в секундах)
@@ -12,3 +13,5 @@ BASE_URL = "https://news.ycombinator.com"
 
 # Путь к файлу для хранения данных
 DATA_FILE = "news_data.json"
+
+LOG_LEVEL = logging.INFO
